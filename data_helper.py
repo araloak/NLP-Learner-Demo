@@ -64,7 +64,7 @@ def load_data_and_labels():
     return [text, label]
 
 #实现将句子长度一致化——长度等于最长的句子长度，剩余的用“”\<PAD/>“补齐
-def pad_sentences(sentences, padding_word="<PAD/>"): 一致
+def pad_sentences(sentences, padding_word="<PAD/>"):
     """
     Pads all sentences to the same length. The length is defined by the longest sentence.
     Returns padded sentences.
