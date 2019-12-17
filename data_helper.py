@@ -7,7 +7,6 @@ import os
 from keras.utils import to_categorical
 from collections import Counter
 
-num_of_differernt_calsses= len(list(os.walk(file_path))[0][2])
 non_chinese_sym=['\'',' ','0', '1', '2', '3', '4', '5', '6', '7', '8', '9','z', 'x', 'c', 'v', 'b', 'n', 'm', 'l', 'k', 'j', 'h', 'g', 'f', 'd', 's', 'a', 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p']
 def clean_str(string):
     """
@@ -114,3 +113,8 @@ def load_data():
     vocabulary, vocabulary_inv = build_vocab(sentences_padded)
     x, y = build_input_data(sentences_padded, labels, vocabulary)
     return [x, y, vocabulary, vocabulary_inv]
+'''
+#用于调试data_helper的正确性
+if __name__ == "__main__":
+    load_data()
+'''
