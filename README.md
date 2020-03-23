@@ -10,5 +10,5 @@ https://github.com/rockyzhengwu/FoolNLTK/blob/master/README_CH.md
 
 ******************************************************************************************************************
 
-data_helper.py
-参考了他人模板（代码中表明了出处），用于快速实现一个NLP项目的数据预处理
+/Xlnet提供了调用xlnet预训练模型进行文本分类的demo
+/Bert提供了调用Bert预训练模型进行文本分类的demo
