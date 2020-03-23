@@ -1,0 +1,75 @@
+import pandas as pd
+import codecs
+import re
+
+from langconv import *#繁体字转化为简体字
+from keras_bert import load_trained_model_from_checkpoint, Tokenizer, extract_embeddings
+
+
+def get_data(data_path):
+    text, label = [], []
+    count = 0
+    df = pd.read_csv(data_path, sep='\t', error_bad_lines=False)
+    for _, row in df.iterrows():
+        try:
+            text.append(row[1])
+            label.append(row[0])
+        except:
+            count+=1
+            print(str(count)+"个无法处理数据")
+            print(_)
+
+    label=pd.get_dummies(pd.DataFrame(label)) #get_dummies方法转化为one-hot标签DF中数据为str类型
+    #text = clean(text)
+    return text,label#两个一维列表，len(corpus) == len(label)
+         
+def clean(text):#数据预处理
+    cleaned_text = []
+    #数据清理
+    for string in text:
+        #print("之前:",string)
+        try:
+            string = Traditional2Simplified(string)
+        except:
+            pass
+        #string = re.sub("\?展开全文c","......",string)
+        #string = re.sub("？[？]+","??",string)
+        #string = re.sub("\?[\?]+","??",string)
+        cleaned_text.append(string)
+    return cleaned_text
+#学习借鉴：https://spaces.ac.cn/archives/6736
+#Tokenizer自带的_tokenize会自动去掉空格，然后有些字符会粘在一块输出，导致tokenize之后的列表不等于原来字符串的长度了，这样如果做序列标注的任务会很麻烦。
+
+class OurTokenizer(Tokenizer):
+    def _tokenize(self, text):
+        R = []
+        for c in text:
+            if c in self._token_dict:
+                R.append(c)
+            elif self._is_space(c):
+                R.append('[unused1]') # space类用未经训练的[unused1]表示
+            else:
+                R.append('[UNK]') # 剩余的字符是[UNK]
+        return R
+def get_bert_input(sentences,dict_path,max_len=128):#sentences是一个输入句子组成的一级列表["你是人","你不是人"]
+    #得到字典
+    token_dict = {}
+    with codecs.open(dict_path, 'r', 'utf8') as reader:
+        for line in reader:
+            token = line.strip()
+            token_dict[token] = len(token_dict)
+            
+    tokenizer = OurTokenizer(token_dict)
+    processed_sentences=[]
+    x1=[]
+    x2=[]
+    #X1是经过编码后的集合，X2表示第一句和第二句的位置，记录的是位置信息
+    #print(sentences)
+    for sentence in sentences:
+        #processed_sentences.append(tokenizer.tokenize(sentence))  
+        indices, segments = tokenizer.encode(first=sentence, max_len=max_len)
+        x1.append(indices)
+        x2.append(segments)
+    #x1 = sequence.pad_sequences(x1, maxlen=max_len)
+    #x1 = sequence.pad_sequences(x2, maxlen=max_len)
+    return x1,x2
