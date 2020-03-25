@@ -7,6 +7,7 @@ from keras_bert import load_trained_model_from_checkpoint, Tokenizer, extract_em
 
 
 def get_data(data_path):
+<<<<<<< HEAD
     text, label = [], []
     count = 0
     df = pd.read_csv(data_path, sep='\t', error_bad_lines=False)
@@ -22,6 +23,21 @@ def get_data(data_path):
     label=pd.get_dummies(pd.DataFrame(label)) #get_dummies方法转化为one-hot标签DF中数据为str类型
     #text = clean(text)
     return text,label#两个一维列表，len(corpus) == len(label)
+=======
+    raw_data=open(data_path,encoding='utf8').read().split('\n')
+    label=[i.split("\t")[0] for i in raw_data][0:-1] #最后一个为空行
+    processed_test_label = []
+    for each in label:
+        if each == "-1":
+            processed_test_label.append("2")
+        else:
+            processed_test_label.append(each)
+    label=pd.get_dummies(pd.DataFrame(processed_test_label)) #转化为one-hot标签
+    
+    corpus=[i[2:].strip() for i in raw_data][0:-1]#最后一个为空行
+
+    return corpus,label
+>>>>>>> 优化了代码
          
 def clean(text):#数据预处理
     cleaned_text = []

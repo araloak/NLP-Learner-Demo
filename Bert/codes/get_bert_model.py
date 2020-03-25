@@ -4,7 +4,11 @@ from keras_bert import load_trained_model_from_checkpoint
 from keras.layers import *
 from keras.models import Model
 from keras import backend as K
+<<<<<<< HEAD
 from keras_radam import RAdam
+=======
+from keras.optimizers import Adam
+>>>>>>> 优化了代码
 
 def f1(y_true, y_pred):
     def recall(y_true, y_pred):
@@ -40,8 +44,13 @@ def build_bert(args):
     bert_model = load_trained_model_from_checkpoint(args.config_path, args.checkpoint_path, seq_len=None)  #加载预训练模型
  
     for l in bert_model.layers:
+<<<<<<< HEAD
         l.trainable = True
  
+=======
+            l.trainable = True
+            
+>>>>>>> 优化了代码
     x1_in = Input(shape=(None,))
     x2_in = Input(shape=(None,))
     
@@ -52,7 +61,11 @@ def build_bert(args):
  
     model = Model([x1_in, x2_in], p)
     model.compile(loss='categorical_crossentropy',
+<<<<<<< HEAD
                   optimizer=RAdam(args.lr),    #用足够小的学习率
+=======
+                  optimizer=Adam(args.lr),    #用足够小的学习率
+>>>>>>> 优化了代码
                   metrics=['accuracy',f1])
     print(model.summary())
     return model

@@ -5,6 +5,10 @@ import sys
 import numpy as np
 import pandas as pd
 import argparse
+<<<<<<< HEAD
+=======
+from sklearn.model_selection import train_test_split
+>>>>>>> 优化了代码
 
 from keras_xlnet.backend import keras
 from keras.utils.np_utils import *
@@ -34,10 +38,21 @@ args.config_path = args.pretrained_path + 'xlnet_config.json'
 args.model_path = args.pretrained_path + 'xlnet_model.ckpt'
 args.vocab_path = args.pretrained_path + 'spiece.model'
 
+<<<<<<< HEAD
 if os.path.exists(args.sub_path)==False:
     os.mkdir(args.sub_path, mode=0o777)
 if os.path.exists(args.finetuned_path)==False:
     os.mkdir(args.finetuned_path, mode=0o777)
+=======
+if os.path.exists(args.train_path)==False:
+    print("本次训练数据未准备")
+    os.makedirs(args.train_path, mode=0o777)
+    exit()
+if os.path.exists(args.sub_path)==False:
+    os.makedirs(args.sub_path, mode=0o777)
+if os.path.exists(args.finetuned_path)==False:
+    os.makedirs(args.finetuned_path, mode=0o777)    
+>>>>>>> 优化了代码
 
 # Read data
 class DataSequence(keras.utils.Sequence):
@@ -64,6 +79,10 @@ def generate_sequence(df):
             encoded = [tokenizer.SYM_PAD] * (args.maxlen - 1 - len(encoded)) + encoded + [tokenizer.SYM_CLS]
             tokens.append(encoded)
             classes.append(str(cls))
+<<<<<<< HEAD
+=======
+            print(cls)
+>>>>>>> 优化了代码
         except:
             pass
             
@@ -71,24 +90,43 @@ def generate_sequence(df):
     classes = pd.get_dummies(pd.DataFrame(classes,columns = ["label"]),prefix_sep='_')
     segments = np.zeros_like(tokens)
     segments[:, -1] = 1
+<<<<<<< HEAD
+=======
+    print(classes[0:3])
+>>>>>>> 优化了代码
     lengths = np.zeros_like(tokens[:, :1])
     return DataSequence([tokens, segments, lengths], classes)
 
 def train():
 
+<<<<<<< HEAD
     model = build_xlnet(args)
     data = pd.read_csv(path, sep='\t', error_bad_lines=False)
+=======
+    
+    data = pd.read_csv(args.train_path, sep='\t', error_bad_lines=False)
+>>>>>>> 优化了代码
     text_data = data.iloc[:,1] 
     label = data.iloc[:,0]
     
     x_train,x_dev, y_train, y_dev =train_test_split(text_data,label,test_size=args.dev_size, random_state=2020)
     
     train_df=pd.DataFrame(x_train).join(y_train)
+<<<<<<< HEAD
     test_df=pd.DataFrame(x_dev).join(y_dev)
 
     train_seq = generate_sequence(train_df)
     dev_seq = generate_sequence(dev_df)
 
+=======
+    dev_df=pd.DataFrame(x_dev).join(y_dev)
+
+    train_seq = generate_sequence(train_df)
+    dev_seq = generate_sequence(dev_df)
+    
+    model = build_xlnet(args)
+    
+>>>>>>> 优化了代码
     model.fit_generator(
         generator=train_seq,
         validation_data=dev_seq,
@@ -131,6 +169,10 @@ if __name__ == "__main__":
     if args.do_train == True:
        train()
     if args.do_predict == True:
+<<<<<<< HEAD
         predict()
+=======
+       predict()
+>>>>>>> 优化了代码
 
     
