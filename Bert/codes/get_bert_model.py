@@ -1,14 +1,12 @@
 import tensorflow as tf
+import keras
 
 from keras_bert import load_trained_model_from_checkpoint
 from keras.layers import *
 from keras.models import Model
 from keras import backend as K
-<<<<<<< HEAD
-from keras_radam import RAdam
-=======
 from keras.optimizers import Adam
->>>>>>> 优化了代码
+from keras_bert.optimizers import AdamWarmup
 
 def f1(y_true, y_pred):
     def recall(y_true, y_pred):
@@ -44,28 +42,46 @@ def build_bert(args):
     bert_model = load_trained_model_from_checkpoint(args.config_path, args.checkpoint_path, seq_len=None)  #加载预训练模型
  
     for l in bert_model.layers:
-<<<<<<< HEAD
-        l.trainable = True
+        #if "-12-" in l.name or "-11-" in l.name or "-10-" in l.name:
+        l.trainable = True#选择冻结的层
  
-=======
-            l.trainable = True
-            
->>>>>>> 优化了代码
     x1_in = Input(shape=(None,))
     x2_in = Input(shape=(None,))
-    
+
     x = bert_model([x1_in, x2_in])
     x = Lambda(lambda x: x[:, 0])(x) # 取出[CLS]对应的向量用来做分类
     
     p = Dense(args.nclass, activation='softmax')(x)
  
     model = Model([x1_in, x2_in], p)
-    model.compile(loss='categorical_crossentropy',
-<<<<<<< HEAD
-                  optimizer=RAdam(args.lr),    #用足够小的学习率
-=======
+    model.compile(loss='categorical_crossentropy',#多分类
                   optimizer=Adam(args.lr),    #用足够小的学习率
->>>>>>> 优化了代码
                   metrics=['accuracy',f1])
+    print(model.summary())
+    return model
+
+def pretrain_bert(args,training= True):
+    bert_model = load_trained_model_from_checkpoint(args.config_path, args.checkpoint_path, seq_len=None,training = training)  #加载预训练模型
+    for l in bert_model.layers:
+        l.trainable = True
+
+    x1_in = Input(shape=(None,))
+    x2_in = Input(shape=(None,))
+    x3_in = Input(shape=(None,))
+
+    x = bert_model([x1_in, x2_in,x3_in])
+
+    model = Model([x1_in, x2_in,x3_in], x)
+    
+    model.compile(
+        optimizer=AdamWarmup(
+            decay_steps=100000,
+            warmup_steps=10000,
+            learning_rate=1e-4,
+            weight_decay=0.01,
+            weight_decay_pattern=['embeddings', 'kernel', 'W1', 'W2', 'Wk', 'Wq', 'Wv', 'Wo'],
+        ),
+        loss=keras.losses.sparse_categorical_crossentropy,
+    )
     print(model.summary())
     return model
