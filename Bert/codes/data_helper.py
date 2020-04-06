@@ -6,24 +6,7 @@ from langconv import *#繁体字转化为简体字
 from keras_bert import load_trained_model_from_checkpoint, Tokenizer, extract_embeddings
 
 
-def get_data(data_path):
-<<<<<<< HEAD
-    text, label = [], []
-    count = 0
-    df = pd.read_csv(data_path, sep='\t', error_bad_lines=False)
-    for _, row in df.iterrows():
-        try:
-            text.append(row[1])
-            label.append(row[0])
-        except:
-            count+=1
-            print(str(count)+"个无法处理数据")
-            print(_)
-
-    label=pd.get_dummies(pd.DataFrame(label)) #get_dummies方法转化为one-hot标签DF中数据为str类型
-    #text = clean(text)
-    return text,label#两个一维列表，len(corpus) == len(label)
-=======
+def get_finetune_data(data_path):
     raw_data=open(data_path,encoding='utf8').read().split('\n')
     label=[i.split("\t")[0] for i in raw_data][0:-1] #最后一个为空行
     processed_test_label = []
@@ -37,8 +20,24 @@ def get_data(data_path):
     corpus=[i[2:].strip() for i in raw_data][0:-1]#最后一个为空行
 
     return corpus,label
->>>>>>> 优化了代码
-         
+def get_pretrain_data(args):
+    text = open(args.pretrain_data_path,encoding = "utf8").readlines()
+
+    sentence_pairs = []
+    text = clean(text)
+    token_dict = {}
+    with codecs.open(args.vocab_path, 'r', 'utf8') as reader:
+        for line in reader:
+            token = line.strip()
+            token_dict[token] = len(token_dict)
+            
+    tokenizer = OurTokenizer(token_dict)
+    for each in text:
+        tem = each.strip()
+        tem = tokenizer.tokenize(tem)
+        tem = tem[1:-1]
+        sentence_pairs.append([tem,[""]])
+    return sentence_pairs
 def clean(text):#数据预处理
     cleaned_text = []
     #数据清理
