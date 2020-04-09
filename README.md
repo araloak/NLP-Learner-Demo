@@ -9,6 +9,3 @@ https://github.com/rockyzhengwu/FoolNLTK/blob/master/README_CH.md
 训练教程参见：https://github.com/rockyzhengwu/FoolNLTK/blob/master/train/README.md
 
 ******************************************************************************************************************
-
-/Xlnet提供了调用xlnet预训练模型进行文本分类的demo
-/Bert提供了调用Bert预训练模型进行文本分类的demo
