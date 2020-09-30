@@ -1,14 +1,14 @@
 from gensim.models import word2vec
 import gensim
 import logging
-import sys
+
 
 embedding_dim=200
 window=5
 min_count=2
 
-train_file_name=sys.path[0]+"\\text.txt"               # save_model为保存模型名
-save_model_name=sys.path[0]+"\\my_diy_language_model"  # model_file_name为训练语料的路径
+train_file_name="./text.txt"               # save_model为保存模型名
+save_model_name="./my_diy_language_model"  # model_file_name为训练语料的路径
 
 def model_train(train_file_name, save_model_name): # 模型训练，生成词向量    
     logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
