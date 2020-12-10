@@ -19,6 +19,15 @@ text = "I want to eat 8 sandwitchs!!! Because I'm hungry"
 words = word_tokenize(text)
 sents = sent_tokenize(text)
 
+#西班牙语分词、分句
+from nltk.tokenize.toktok import ToktokTokenizer
+toktok = ToktokTokenizer()
+sent = u"¿Quién eres tú? ¡Hola! ¿Dónde estoy?"
+print(toktok.tokenize(sent))
+sentences = u"¿Quién eres tú? ¡Hola! ¿Dónde estoy?"
+sents = [toktok.tokenize(sent) for sent in sent_tokenize(sentences, language='spanish')]
+print(sents)
+
 #输出n-grams
 print(list(nltk.bigrams(words)))
 print(list(nltk.trigrams(words)))
